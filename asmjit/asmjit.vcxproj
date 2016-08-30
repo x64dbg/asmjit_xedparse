@@ -13,6 +13,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{C2935447-E6CD-4F9D-8561-FE372440CAEE}</ProjectGuid>
     <RootNamespace>asmjit</RootNamespace>
+    <ProjectName>XEDParse</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -39,7 +40,14 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)bin\x32\</OutDir>
+    <IncludePath>$(ProjectDir)asmjit\src;$(ProjectDir)asmtk\src;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)bin\x64\</OutDir>
+    <IncludePath>$(ProjectDir)asmjit\src;$(ProjectDir)asmtk\src;$(IncludePath)</IncludePath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -48,11 +56,13 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PreprocessorDefinitions>XEDPARSE_BUILD;ASMJIT_STATIC;_USING_V110_SDK71_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <SubSystem>Windows</SubSystem>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -63,14 +73,93 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PreprocessorDefinitions>XEDPARSE_BUILD;ASMJIT_STATIC;_USING_V110_SDK71_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <SubSystem>Windows</SubSystem>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="asmjit\src\asmjit\arm.h" />
+    <ClInclude Include="asmjit\src\asmjit\asmjit.h" />
+    <ClInclude Include="asmjit\src\asmjit\asmjit_apibegin.h" />
+    <ClInclude Include="asmjit\src\asmjit\asmjit_apiend.h" />
+    <ClInclude Include="asmjit\src\asmjit\asmjit_build.h" />
+    <ClInclude Include="asmjit\src\asmjit\base.h" />
+    <ClInclude Include="asmjit\src\asmjit\base\arch.h" />
+    <ClInclude Include="asmjit\src\asmjit\base\assembler.h" />
+    <ClInclude Include="asmjit\src\asmjit\base\codebuilder.h" />
+    <ClInclude Include="asmjit\src\asmjit\base\codecompiler.h" />
+    <ClInclude Include="asmjit\src\asmjit\base\codeemitter.h" />
+    <ClInclude Include="asmjit\src\asmjit\base\codeholder.h" />
+    <ClInclude Include="asmjit\src\asmjit\base\constpool.h" />
+    <ClInclude Include="asmjit\src\asmjit\base\cpuinfo.h" />
+    <ClInclude Include="asmjit\src\asmjit\base\func.h" />
+    <ClInclude Include="asmjit\src\asmjit\base\globals.h" />
+    <ClInclude Include="asmjit\src\asmjit\base\logging.h" />
+    <ClInclude Include="asmjit\src\asmjit\base\operand.h" />
+    <ClInclude Include="asmjit\src\asmjit\base\osutils.h" />
+    <ClInclude Include="asmjit\src\asmjit\base\regalloc_p.h" />
+    <ClInclude Include="asmjit\src\asmjit\base\runtime.h" />
+    <ClInclude Include="asmjit\src\asmjit\base\simdtypes.h" />
+    <ClInclude Include="asmjit\src\asmjit\base\string.h" />
+    <ClInclude Include="asmjit\src\asmjit\base\utils.h" />
+    <ClInclude Include="asmjit\src\asmjit\base\vmem.h" />
+    <ClInclude Include="asmjit\src\asmjit\base\zone.h" />
+    <ClInclude Include="asmjit\src\asmjit\base\zonecontainers.h" />
+    <ClInclude Include="asmjit\src\asmjit\base\zoneheap.h" />
+    <ClInclude Include="asmjit\src\asmjit\x86.h" />
+    <ClInclude Include="asmjit\src\asmjit\x86\x86assembler.h" />
+    <ClInclude Include="asmjit\src\asmjit\x86\x86compiler.h" />
+    <ClInclude Include="asmjit\src\asmjit\x86\x86emitter.h" />
+    <ClInclude Include="asmjit\src\asmjit\x86\x86inst.h" />
+    <ClInclude Include="asmjit\src\asmjit\x86\x86internal_p.h" />
+    <ClInclude Include="asmjit\src\asmjit\x86\x86logging.h" />
+    <ClInclude Include="asmjit\src\asmjit\x86\x86misc.h" />
+    <ClInclude Include="asmjit\src\asmjit\x86\x86operand.h" />
+    <ClInclude Include="asmjit\src\asmjit\x86\x86regalloc_p.h" />
+    <ClInclude Include="asmtk\src\asmtk\asmparser.h" />
+    <ClInclude Include="asmtk\src\asmtk\asmtk.h" />
+    <ClInclude Include="asmtk\src\asmtk\asmtokenizer.h" />
+    <ClInclude Include="asmtk\src\asmtk\strtod.h" />
+    <ClInclude Include="XEDParse.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="asmjit\src\asmjit\base\arch.cpp" />
+    <ClCompile Include="asmjit\src\asmjit\base\assembler.cpp" />
+    <ClCompile Include="asmjit\src\asmjit\base\codebuilder.cpp" />
+    <ClCompile Include="asmjit\src\asmjit\base\codecompiler.cpp" />
+    <ClCompile Include="asmjit\src\asmjit\base\codeemitter.cpp" />
+    <ClCompile Include="asmjit\src\asmjit\base\codeholder.cpp" />
+    <ClCompile Include="asmjit\src\asmjit\base\constpool.cpp" />
+    <ClCompile Include="asmjit\src\asmjit\base\cpuinfo.cpp" />
+    <ClCompile Include="asmjit\src\asmjit\base\func.cpp" />
+    <ClCompile Include="asmjit\src\asmjit\base\globals.cpp" />
+    <ClCompile Include="asmjit\src\asmjit\base\logging.cpp" />
+    <ClCompile Include="asmjit\src\asmjit\base\operand.cpp" />
+    <ClCompile Include="asmjit\src\asmjit\base\osutils.cpp" />
+    <ClCompile Include="asmjit\src\asmjit\base\regalloc.cpp" />
+    <ClCompile Include="asmjit\src\asmjit\base\runtime.cpp" />
+    <ClCompile Include="asmjit\src\asmjit\base\string.cpp" />
+    <ClCompile Include="asmjit\src\asmjit\base\utils.cpp" />
+    <ClCompile Include="asmjit\src\asmjit\base\vmem.cpp" />
+    <ClCompile Include="asmjit\src\asmjit\base\zone.cpp" />
+    <ClCompile Include="asmjit\src\asmjit\base\zonecontainers.cpp" />
+    <ClCompile Include="asmjit\src\asmjit\base\zoneheap.cpp" />
+    <ClCompile Include="asmjit\src\asmjit\x86\x86assembler.cpp" />
+    <ClCompile Include="asmjit\src\asmjit\x86\x86compiler.cpp" />
+    <ClCompile Include="asmjit\src\asmjit\x86\x86inst.cpp" />
+    <ClCompile Include="asmjit\src\asmjit\x86\x86internal.cpp" />
+    <ClCompile Include="asmjit\src\asmjit\x86\x86logging.cpp" />
+    <ClCompile Include="asmjit\src\asmjit\x86\x86operand.cpp" />
+    <ClCompile Include="asmjit\src\asmjit\x86\x86operand_regs.cpp" />
+    <ClCompile Include="asmjit\src\asmjit\x86\x86regalloc.cpp" />
+    <ClCompile Include="asmtk\src\asmtk\asmparser.cpp" />
+    <ClCompile Include="asmtk\src\asmtk\asmtokenizer.cpp" />
+    <ClCompile Include="XEDParseEmulator.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
