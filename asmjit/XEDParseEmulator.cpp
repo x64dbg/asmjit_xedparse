@@ -69,7 +69,7 @@ XEDPARSE_EXPORT XEDPARSE_STATUS XEDPARSE_CALL XEDParseAssemble(XEDPARSE* XEDPars
     AsmParser p(&a);
 
     // Parse some assembly.
-    Error err = p.parse("nop");
+    Error err = p.parse(XEDParse->instr);
 
     // Error handling (use asmjit::ErrorHandler for more robust error handling).
     if (err != kErrorOk)
@@ -87,6 +87,5 @@ XEDPARSE_EXPORT XEDPARSE_STATUS XEDPARSE_CALL XEDParseAssemble(XEDPARSE* XEDPars
     XEDParse->dest_size = std::min<unsigned int>((unsigned int)buffer.length, XEDPARSE_MAXASMSIZE);
     memcpy(XEDParse->dest, buffer.data, XEDParse->dest_size);
 
-    sprintf_s(XEDParse->error, "success %d\n", XEDParse->dest_size);
-    return XEDPARSE_ERROR;
+    return XEDPARSE_OK;
 }
