@@ -5,43 +5,15 @@
 using namespace asmjit;
 using namespace asmtk;
 
-static char* stristr(const char* haystack, const char* needle)
+static Error ASMJIT_CDECL unknownSymbolHandler(AsmParser* parser, Operand* dst, const char* name, size_t len)
 {
-    // Case insensitive strstr
-    // http://stackoverflow.com/questions/27303062/strstr-function-like-that-ignores-upper-or-lower-case
-    do
+    unsigned long long value;
+    if (CBXEDPARSE_UNKNOWN(parser->getUnknownSymbolHandlerData())(name, &value))
     {
-        const char* h = haystack;
-        const char* n = needle;
-        while (tolower((unsigned char)*h) == tolower((unsigned char)*n) && *n)
-        {
-            h++;
-            n++;
-        }
-
-        if (*n == 0)
-            return (char*)haystack;
-
-    } while (*haystack++);
-
-    // Not found
-    return nullptr;
-}
-
-static bool StrDel(char* Source, char* Needle, char StopAt = '\0')
-{
-    // Find the location in the string first
-    char* loc = stristr(Source, Needle);
-
-    if (!loc)
-        return false;
-
-    // "Delete" the word by shifting it over
-    auto needleLen = strlen(Needle);
-
-    memcpy(loc, loc + needleLen, strlen(loc) - needleLen + 1);
-
-    return true;
+        *dst = imm(value);
+        return kErrorOk;
+    }
+    return kErrorInvalidLabel;
 }
 
 XEDPARSE_EXPORT XEDPARSE_STATUS XEDPARSE_CALL XEDParseAssemble(XEDPARSE* XEDParse)
@@ -49,32 +21,52 @@ XEDPARSE_EXPORT XEDPARSE_STATUS XEDPARSE_CALL XEDParseAssemble(XEDPARSE* XEDPars
     if (!XEDParse)
         return XEDPARSE_ERROR;
 
-    auto sep = strstr(XEDParse->instr, ";");
-    if (!sep)
-        sep = strstr(XEDParse->instr, "\n");
-    if (sep)
-        *sep = '\0';
-    StrDel(XEDParse->instr, "short ");
+    // Only assemble one instruction
+    auto len = strlen(XEDParse->instr);
+    for (size_t i = 0; i < len; i++)
+    {
+        auto & ch = XEDParse->instr[i];
+        if (ch == ';' || ch == '\r' || ch == '\n')
+        {
+            ch = '\0';
+            break;
+        }
+    }
 
-    // Setup a CodeHolder for X64.
+    // Setup CodeInfo
+    CodeInfo codeinfo(XEDParse->x64 ? ArchInfo::kTypeX64 : ArchInfo::kTypeX86, 0, XEDParse->cip);
+
+    // Setup CodeHolder
     CodeHolder code;
-    CodeInfo codeinfo(XEDParse->x64 ? ArchInfo::kTypeX64 : ArchInfo::kTypeX86);
-    codeinfo.setBaseAddress(XEDParse->cip);
-    code.init(codeinfo);
+    auto err = code.init(codeinfo);
+    if (err != kErrorOk)
+    {
+        sprintf_s(XEDParse->error, "CodeHolder::init failed: %s", DebugUtils::errorAsString(err));
+        return XEDPARSE_ERROR;
+    }
 
     // Attach an assembler to the CodeHolder.
     X86Assembler a(&code);
 
     // Create AsmParser that will emit to X86Assembler.
     AsmParser p(&a);
+    if (XEDParse->cbUnknown)
+        p.setUnknownSymbolHandler(unknownSymbolHandler, XEDParse->cbUnknown);
 
     // Parse some assembly.
-    Error err = p.parse(XEDParse->instr);
+    err = p.parse(XEDParse->instr);
 
-    // Error handling (use asmjit::ErrorHandler for more robust error handling).
+    // Error handling
     if (err != kErrorOk)
     {
-        sprintf_s(XEDParse->error, "ERROR %08X (%s)", err, DebugUtils::errorAsString(err));
+        sprintf_s(XEDParse->error, "AsmParser::parse failed: %s", DebugUtils::errorAsString(err));
+        return XEDPARSE_ERROR;
+    }
+
+    // Check for unresolved relocations
+    if(code._relocations.getLength())
+    {
+        strcpy_s(XEDParse->error, "Unresolved relocation!");
         return XEDPARSE_ERROR;
     }
 
@@ -83,7 +75,7 @@ XEDPARSE_EXPORT XEDPARSE_STATUS XEDPARSE_CALL XEDParseAssemble(XEDPARSE* XEDPars
     code.sync();
 
     // Now you can print the code, which is stored in the first section (.text).
-    CodeBuffer& buffer = code.getSectionEntry(0)->buffer;
+    auto & buffer = code.getSectionEntry(0)->buffer;
     XEDParse->dest_size = std::min<unsigned int>((unsigned int)buffer.length, XEDPARSE_MAXASMSIZE);
     memcpy(XEDParse->dest, buffer.data, XEDParse->dest_size);
 
