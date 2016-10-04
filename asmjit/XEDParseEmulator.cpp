@@ -5,6 +5,46 @@
 using namespace asmjit;
 using namespace asmtk;
 
+static char* stristr(const char* haystack, const char* needle)
+{
+    // Case insensitive strstr
+    // http://stackoverflow.com/questions/27303062/strstr-function-like-that-ignores-upper-or-lower-case
+    do
+    {
+        const char* h = haystack;
+        const char* n = needle;
+        while (tolower((unsigned char)*h) == tolower((unsigned char)*n) && *n)
+        {
+            h++;
+            n++;
+        }
+
+        if (*n == 0)
+            return (char*)haystack;
+
+    } while (*haystack++);
+
+    // Not found
+    return nullptr;
+}
+
+static bool StrDel(char* Source, const char* Needle)
+{
+    // Find the location in the string first
+    char* loc = stristr(Source, Needle);
+
+    if (!loc)
+        return false;
+
+    // "Delete" the word by shifting it over
+    auto needleLen = strlen(Needle);
+
+    memmove(loc, loc + needleLen, strlen(loc) - needleLen + 1);
+
+    return true;
+}
+
+
 static Error ASMJIT_CDECL unknownSymbolHandler(AsmParser* parser, Operand* dst, const char* name, size_t len)
 {
     unsigned long long value;
@@ -33,6 +73,8 @@ XEDPARSE_EXPORT XEDPARSE_STATUS XEDPARSE_CALL XEDParseAssemble(XEDPARSE* XEDPars
         }
     }
 
+    bool short_command = StrDel(XEDParse->instr, "short ");
+
     // Setup CodeInfo
     CodeInfo codeinfo(XEDParse->x64 ? ArchInfo::kTypeX64 : ArchInfo::kTypeX86, 0, XEDParse->cip);
 
@@ -41,7 +83,8 @@ XEDPARSE_EXPORT XEDPARSE_STATUS XEDPARSE_CALL XEDParseAssemble(XEDPARSE* XEDPars
     auto err = code.init(codeinfo);
     if (err != kErrorOk)
     {
-        sprintf_s(XEDParse->error, "CodeHolder::init failed: %s", DebugUtils::errorAsString(err));
+        strcpy_s(XEDParse->error, DebugUtils::errorAsString(err));
+        *XEDParse->error = tolower(*XEDParse->error);
         return XEDPARSE_ERROR;
     }
 
@@ -59,14 +102,15 @@ XEDPARSE_EXPORT XEDPARSE_STATUS XEDPARSE_CALL XEDParseAssemble(XEDPARSE* XEDPars
     // Error handling
     if (err != kErrorOk)
     {
-        sprintf_s(XEDParse->error, "AsmParser::parse failed: %s", DebugUtils::errorAsString(err));
+        strcpy_s(XEDParse->error, DebugUtils::errorAsString(err));
+        *XEDParse->error = tolower(*XEDParse->error);
         return XEDPARSE_ERROR;
     }
 
     // Check for unresolved relocations
     if(code._relocations.getLength())
     {
-        strcpy_s(XEDParse->error, "Unresolved relocation!");
+        strcpy_s(XEDParse->error, "unresolved relocation");
         return XEDPARSE_ERROR;
     }
 
@@ -75,9 +119,14 @@ XEDPARSE_EXPORT XEDPARSE_STATUS XEDPARSE_CALL XEDParseAssemble(XEDPARSE* XEDPars
     code.sync();
 
     // Now you can print the code, which is stored in the first section (.text).
-    auto & buffer = code.getSectionEntry(0)->buffer;
-    XEDParse->dest_size = std::min<unsigned int>((unsigned int)buffer.length, XEDPARSE_MAXASMSIZE);
-    memcpy(XEDParse->dest, buffer.data, XEDParse->dest_size);
+    auto & buffer = code.getSectionEntry(0)->getBuffer();
+    XEDParse->dest_size = std::min<unsigned int>((unsigned int)buffer.getLength(), XEDPARSE_MAXASMSIZE);
+    if (short_command && XEDParse->dest_size > 2)
+    {
+        strcpy_s(XEDParse->error, "destination is out of range");
+        return XEDPARSE_ERROR;
+    }
+    memcpy(XEDParse->dest, buffer.getData(), XEDParse->dest_size);
 
     return XEDPARSE_OK;
 }
