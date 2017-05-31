@@ -48,9 +48,6 @@
     <ClInclude Include="asmjit\src\asmjit\asmjit_apibegin.h">
       <Filter>Header Files\asmjit</Filter>
     </ClInclude>
-    <ClInclude Include="asmjit\src\asmjit\asmjit_apiend.h">
-      <Filter>Header Files\asmjit</Filter>
-    </ClInclude>
     <ClInclude Include="asmjit\src\asmjit\asmjit_build.h">
       <Filter>Header Files\asmjit</Filter>
     </ClInclude>
@@ -120,12 +117,6 @@
     <ClInclude Include="asmjit\src\asmjit\base\zone.h">
       <Filter>Header Files\asmjit\base</Filter>
     </ClInclude>
-    <ClInclude Include="asmjit\src\asmjit\base\zonecontainers.h">
-      <Filter>Header Files\asmjit\base</Filter>
-    </ClInclude>
-    <ClInclude Include="asmjit\src\asmjit\base\zoneheap.h">
-      <Filter>Header Files\asmjit\base</Filter>
-    </ClInclude>
     <ClInclude Include="asmjit\src\asmjit\x86\x86assembler.h">
       <Filter>Header Files\asmjit\x86</Filter>
     </ClInclude>
@@ -139,9 +130,6 @@
       <Filter>Header Files\asmjit\x86</Filter>
     </ClInclude>
     <ClInclude Include="asmjit\src\asmjit\x86\x86internal_p.h">
-      <Filter>Header Files\asmjit\x86</Filter>
-    </ClInclude>
-    <ClInclude Include="asmjit\src\asmjit\x86\x86logging.h">
       <Filter>Header Files\asmjit\x86</Filter>
     </ClInclude>
     <ClInclude Include="asmjit\src\asmjit\x86\x86misc.h">
@@ -167,6 +155,33 @@
     </ClInclude>
     <ClInclude Include="XEDParse.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="asmjit\src\asmjit\asmjit_apiend.h">
+      <Filter>Header Files\asmjit</Filter>
+    </ClInclude>
+    <ClInclude Include="asmjit\src\asmjit\base\inst.h">
+      <Filter>Header Files\asmjit\base</Filter>
+    </ClInclude>
+    <ClInclude Include="asmjit\src\asmjit\base\misc_p.h">
+      <Filter>Header Files\asmjit\base</Filter>
+    </ClInclude>
+    <ClInclude Include="asmjit\src\asmjit\x86\x86builder.h">
+      <Filter>Header Files\asmjit\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="asmjit\src\asmjit\x86\x86globals.h">
+      <Filter>Header Files\asmjit\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="asmjit\src\asmjit\x86\x86instimpl_p.h">
+      <Filter>Header Files\asmjit\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="asmjit\src\asmjit\x86\x86logging_p.h">
+      <Filter>Header Files\asmjit\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="asmtk\src\asmtk\elfdefs.h">
+      <Filter>Header Files\asmtk</Filter>
+    </ClInclude>
+    <ClInclude Include="asmtk\src\asmtk\globals.h">
+      <Filter>Header Files\asmtk</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -227,12 +242,6 @@
     <ClCompile Include="asmjit\src\asmjit\base\zone.cpp">
       <Filter>Source Files\asmjit\base</Filter>
     </ClCompile>
-    <ClCompile Include="asmjit\src\asmjit\base\zonecontainers.cpp">
-      <Filter>Source Files\asmjit\base</Filter>
-    </ClCompile>
-    <ClCompile Include="asmjit\src\asmjit\base\zoneheap.cpp">
-      <Filter>Source Files\asmjit\base</Filter>
-    </ClCompile>
     <ClCompile Include="asmjit\src\asmjit\x86\x86assembler.cpp">
       <Filter>Source Files\asmjit\x86</Filter>
     </ClCompile>
@@ -265,6 +274,15 @@
     </ClCompile>
     <ClCompile Include="XEDParseEmulator.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="asmjit\src\asmjit\base\inst.cpp">
+      <Filter>Source Files\asmjit\base</Filter>
+    </ClCompile>
+    <ClCompile Include="asmjit\src\asmjit\x86\x86builder.cpp">
+      <Filter>Source Files\asmjit\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="asmjit\src\asmjit\x86\x86instimpl.cpp">
+      <Filter>Source Files\asmjit\x86</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
