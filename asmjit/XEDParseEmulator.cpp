@@ -8,7 +8,7 @@ using namespace asmtk;
 static Error ASMJIT_CDECL unknownSymbolHandler(AsmParser* parser, Operand* dst, const char* name, size_t len)
 {
     unsigned long long value;
-    if (CBXEDPARSE_UNKNOWN(parser->getUnknownSymbolHandlerData())(name, &value))
+    if (CBXEDPARSE_UNKNOWN(parser->unknownSymbolHandlerData())(name, &value))
     {
         *dst = imm(value);
         return kErrorOk;
@@ -34,7 +34,7 @@ XEDPARSE_EXPORT XEDPARSE_STATUS XEDPARSE_CALL XEDParseAssemble(XEDPARSE* XEDPars
     }
 
     // Setup CodeInfo
-    CodeInfo codeinfo(XEDParse->x64 ? ArchInfo::kTypeX64 : ArchInfo::kTypeX86, 0, XEDParse->cip);
+    CodeInfo codeinfo(XEDParse->x64 ? ArchInfo::kIdX64 : ArchInfo::kIdX86, 0, XEDParse->cip);
 
     // Setup CodeHolder
     CodeHolder code;
@@ -47,7 +47,7 @@ XEDPARSE_EXPORT XEDPARSE_STATUS XEDPARSE_CALL XEDParseAssemble(XEDPARSE* XEDPars
     }
 
     // Attach an assembler to the CodeHolder.
-    X86Assembler a(&code);
+    x86::Assembler a(&code);
 
     // Create AsmParser that will emit to X86Assembler.
     AsmParser p(&a);
@@ -66,20 +66,16 @@ XEDPARSE_EXPORT XEDPARSE_STATUS XEDPARSE_CALL XEDParseAssemble(XEDPARSE* XEDPars
     }
 
     // Check for unresolved relocations
-    if(code._relocations.getLength())
+    if(code._relocations.size())
     {
         strcpy_s(XEDParse->error, "unresolved relocation");
         return XEDPARSE_ERROR;
     }
 
-    // If we are done, you must detach the Assembler from CodeHolder or sync
-    // it, so its internal state and position is synced with CodeHolder.
-    code.sync();
-
     // Now you can print the code, which is stored in the first section (.text).
-    auto & buffer = code.getSectionEntry(0)->getBuffer();
-    XEDParse->dest_size = std::min<unsigned int>((unsigned int)buffer.getLength(), XEDPARSE_MAXASMSIZE);
-    memcpy(XEDParse->dest, buffer.getData(), XEDParse->dest_size);
+    auto & buffer = code.sectionById(0)->buffer();
+    XEDParse->dest_size = std::min<unsigned int>((unsigned int)buffer.size(), XEDPARSE_MAXASMSIZE);
+    memcpy(XEDParse->dest, buffer.data(), XEDParse->dest_size);
 
     return XEDPARSE_OK;
 }
