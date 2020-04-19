@@ -5,3 +5,4 @@ bin/
 Release/
 Debug/
 .vs/
+*.vcxproj.user
