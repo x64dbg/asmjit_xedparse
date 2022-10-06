@@ -1,5 +1,6 @@
 #include "XEDParse.h"
-#include <asmtk/asmtk.h>
+#include "asmjit/x86.h"
+#include "asmtk/asmtk.h"
 #include <algorithm>
 
 using namespace asmjit;
@@ -34,11 +35,11 @@ XEDPARSE_EXPORT XEDPARSE_STATUS XEDPARSE_CALL XEDParseAssemble(XEDPARSE* XEDPars
     }
 
     // Setup CodeInfo
-    CodeInfo codeinfo(XEDParse->x64 ? ArchInfo::kIdX64 : ArchInfo::kIdX86, 0, XEDParse->cip);
+    Environment env(Arch::kX64);
 
     // Setup CodeHolder
     CodeHolder code;
-    auto err = code.init(codeinfo);
+    auto err = code.init(env, XEDParse->cip);
     if (err != kErrorOk)
     {
         strcpy_s(XEDParse->error, DebugUtils::errorAsString(err));
