@@ -2,6 +2,7 @@
 #include "asmjit/x86.h"
 #include "asmtk/asmtk.h"
 #include <algorithm>
+#include <cctype>
 
 using namespace asmjit;
 using namespace asmtk;
