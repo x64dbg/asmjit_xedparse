@@ -36,7 +36,7 @@ XEDPARSE_EXPORT XEDPARSE_STATUS XEDPARSE_CALL XEDParseAssemble(XEDPARSE* XEDPars
     }
 
     // Setup CodeInfo
-    Environment env(Arch::kX64);
+    Environment env(XEDParse->x64 ? Arch::kX64 : Arch::kX86);
 
     // Setup CodeHolder
     CodeHolder code;
