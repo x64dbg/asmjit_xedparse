@@ -25,15 +25,15 @@ XEDPARSE_EXPORT XEDPARSE_STATUS XEDPARSE_CALL XEDParseAssemble(XEDPARSE* XEDPars
 
     // Only assemble one instruction
     auto len = strlen(XEDParse->instr);
-    for (size_t i = 0; i < len; i++)
-    {
-        auto & ch = XEDParse->instr[i];
-        if (ch == ';' || ch == '\r' || ch == '\n')
-        {
-            ch = '\0';
-            break;
-        }
-    }
+    // for (size_t i = 0; i < len; i++)
+    // {
+    //     auto & ch = XEDParse->instr[i];
+    //     if (ch == ';' || ch == '\r' || ch == '\n')
+    //     {
+    //         ch = '\0';
+    //         break;
+    //     }
+    // }
 
     // Setup CodeInfo
     Environment env(XEDParse->x64 ? Arch::kX64 : Arch::kX86);
